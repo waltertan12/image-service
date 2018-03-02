@@ -1,26 +1,28 @@
-const CONTENT_TYPE_REGEXP = /data\:([a-z]+\/[a-z]+);/;
-export const base64toBlob = base64Data => {
+const CONTENT_TYPE_REGEXP = /data:([a-z]+\/[a-z]+);base64,/;
+
+export const base64ToBlob = (base64Data, sliceSize = 512) => {
   const regExpData = CONTENT_TYPE_REGEXP.exec(base64Data);
-  if (!regExpData) {
-    throw new Error('sad days');
+  if (regExpData === null) {
+    throw new Error('Could not retreive content type from string');
   }
 
   const contentType = regExpData[1];
-  const sliceSize = 1024;
-  const byteCharacters = atob(base64Data);
-  const bytesLength = byteCharacters.length;
-  const slicesCount = Math.ceil(bytesLength / sliceSize);
-  const byteArrays = new Array(slicesCount);
-
-  for (var sliceIndex = 0; sliceIndex < slicesCount; ++sliceIndex) {
-    var begin = sliceIndex * sliceSize;
-    var end = Math.min(begin + sliceSize, bytesLength);
-
-    var bytes = new Array(end - begin);
-    for (var offset = begin, i = 0; offset < end; ++i, ++offset) {
-        bytes[i] = byteCharacters[offset].charCodeAt(0);
+  const base64String = base64Data.replace(CONTENT_TYPE_REGEXP, '');
+  const byteCharacters = atob(base64String);
+  const byteArrays = [];
+  
+  for (let offset = 0; offset < byteCharacters.length; offset += sliceSize) {
+    const slice = byteCharacters.slice(offset, offset + sliceSize);
+    
+    const byteNumbers = new Array(slice.length);
+    for (let i = 0; i < slice.length; i++) {
+      byteNumbers[i] = slice.charCodeAt(i);
     }
-    byteArrays[sliceIndex] = new Uint8Array(bytes);
+    
+    const byteArray = new Uint8Array(byteNumbers);
+    
+    byteArrays.push(byteArray);
   }
+  
   return new Blob(byteArrays, { type: contentType });
 };

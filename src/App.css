@@ -1,3 +1,36 @@
+body {
+  font-family: Roboto, sans-serif;
+}
+
+input,
+select,
+textarea,
+button {
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+}
+
 .app {
   padding: 1rem;
 }
+
+.editor {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+}
+
+.editor__image-editor {
+}
+
+.editor__form-group {
+  padding-bottom: 1rem;
+}
+
+.editor__form-group label {
+  font-weight: bold;
+}
+
+
